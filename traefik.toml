@@ -1,0 +1,53 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["https","http"]
+
+# run the ping-test backend on http
+# http://<blah>/ping
+[ping]
+entryPoint = "http"
+
+# API backend, magic happens in the docker-compose.yml file...
+# ends up on https://<blah>/api
+[api]
+  entryPoint = "traefik"
+  dashboard = true
+  debug = false
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+  [entryPoints.traefik]
+  address = ":8080"
+    [entryPoints.traefik.auth.basic]
+    users = ["admin:$apr1$hEFwU1HT$tSED2r4stzC9Tk1TnTZ6h/"]
+
+# retry requests if network error
+[retry]
+
+# listen for docker containers, only expose the containers that
+# request it
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+watch = true
+exposedbydefault = false
+
+[acme]
+email = "hartzell@alerce.com"
+storage = "acme.json"
+entryPoint = "https"
+OnHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
+
+# ensure we have a search for this host, even if we don't
+# mention it in any frontend rules.
+[[acme.domains]]
+  main = "bunny.do.alerce.com"
+

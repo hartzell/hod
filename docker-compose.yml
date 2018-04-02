@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik:1.5.4
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    expose:
+      - 8080
+    networks:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # relative to docker-compose.yml file
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    container_name: traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.docker.network=web"
+      - "traefik.port=8080"
+      - "traefik.frontend.rule=Host:bunny.do.alerce.com;PathPrefixStrip:/api"
+
+  whoami:
+    image: emilevauge/whoami #A container that exposes an API to show it's IP address
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Path:/whoami"
+    networks:
+      - web
+
+networks:
+  web:
+    external: false
