@@ -25,8 +25,8 @@ entryPoint = "http"
     [entryPoints.https.tls]
   [entryPoints.traefik]
   address = ":8080"
-    [entryPoints.traefik.auth.basic]
-    users = ["admin:$apr1$hEFwU1HT$tSED2r4stzC9Tk1TnTZ6h/"]
+    [entryPoints.traefik.auth.digest]
+    users = ["api:traefik:65ad823c19c568ed6464412de8649dba"]
 
 # retry requests if network error
 [retry]
