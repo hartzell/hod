@@ -47,11 +47,18 @@ a template or a working starting point for a solution to your problem.
    and touch up the `acme.domains` bit at the bottom of `traefik.toml`
    to ensure that a certificate is generated.
 
-   The password for the admin user was generated like so (using
-   `htpasswd` from the Apache project):
+   The password for the admin user can be generated like so (using
+   `htpasswd` from the Apache project) if you're using basic auth:
 
    ```
    htpasswd -nb admin secure_password
+   ```
+
+   or like so for digest auth:
+
+   ```
+   htdigest -c password-file traefik api
+   cat password-file
    ```
 
    and then set in the `traefik.toml` file.  You might want to use a
@@ -73,6 +80,9 @@ a template or a working starting point for a solution to your problem.
    sudo chmod 600 acme.json
    ```
 
+3. Create the Docker network if necessary.  The default configuration
+   uses one named `web`, adjust it if necessary
+
 4. Run docker-compose, e.g.
 
    ```
@@ -87,6 +97,45 @@ a template or a working starting point for a solution to your problem.
 5. Cocktail.
 
 6. You changed the admin password, right?
+
+### Managing secrets
+
+It's nice to be able to pass "secrets" into the containers without
+having them committed to the central source control.  You can do this
+by maintaining a separate secrets file and merging it in when you run
+`docker-compose`, e.g.:
+
+```
+docker-compose -f docker-compose.yml -f ~/.cimr-secrets/secrets.yml up
+```
+
+Here's an example of a set of secrets for a cimr container:
+
+```yaml
+version: '2'
+
+services:
+  ft-cimr:
+    environment:
+      JENKINS_ADMIN_PASSWORD: bloop
+      JENKINS_GIT_PRIVATE_KEY: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEpQIBAAKCAQEA7ZMUhGe8O7rK5cimlIGia3Ze1+R5JfS8uk4Yovc3YiupW6PY
+        qY+UDin5ewBaZVfUaPygnTrssuDf5HvtOkSnOvPA7hyUiHtLtkEuMww/w/O2OEK4
+        XEOCQaiJGVp4ykkLvCJ4Gu4euKB1zwKb2oPg5BrYpqCJuvjX5Eu3Yp4+0gCbZv8I
+        [... many lines deleted]
+        AR5UJF4Edd8WmyUTiRbopzbxJnxDrZipY1Qfsk4d5bNLo1Wo06jxyhE=
+        -----END RSA PRIVATE KEY-----
+      JENKINS_GITHUB_TOKEN: 5efac3158d4523505383f16e8867d754fa5z32fd
+      JENKINS_SLAVES_PRIVATE_KEY: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEpQIBAAKCAQEA7ZMUhGe8O7rK5cimlIGia3Ze1+R5JfS8uk4Yovc3YiupW6PY
+        qY+UDin5ewBaZVfUaPygnTrssuDf5HvtOkSnOvPA7hyUiHtLtkEuMww/w/O2OEK4
+        XEOCQaiJGVp4ykkLvCJ4Gu4euKB1zwKb2oPg5BrYpqCJuvjX5Eu3Yp4+0gCbZv8I
+        [... many lines deleted]
+        AR5UJF4Edd8WmyUTiRbopzbxJnxDrZipY1Qfsk4d5bNLo1Wo06jxyhE=
+        -----END RSA PRIVATE KEY-----
+```
 
 ### What should work
 

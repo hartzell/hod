@@ -33,25 +33,29 @@ services:
     networks:
       - web
 
-  ft-cimr:
-    container_name: ft-cimr
-    image: cimr:0.0.8
-    environment:
-      - JENKINS_OPTS="--prefix=/jenkins/demo-cimr/"
-    volumes:
-      - /home/hartzell/demo-cimr/cimr_config.yaml:/cimr_config.yaml
-#    restart_policy:
-#      condition: on-failure
-#      delay: 5s
-#      max_attempts: 5
-#      window: 60s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.frontend.rule=PathPrefix:/jenkins/demo-cimr/"
-      - "traefik.docker.network=web"
-      - "traefik.port=8080"
-    networks:
-      - web
+## An example of running a cimr container.  You might need to merge secrets:
+##   docker-compose -f docker-compose.yml -f /path/to/secrets.yml up
+##
+## Get the basics working before you try this...
+##   ft-cimr:
+##     container_name: ft-cimr
+##     image: cimr:0.0.8
+##     environment:
+##       - JENKINS_OPTS="--prefix=/jenkins/demo-cimr/"
+##     volumes:
+##       - /home/hartzell/demo-cimr/cimr_config.yaml:/cimr_config.yaml
+## #    restart_policy:
+## #      condition: on-failure
+## #      delay: 5s
+## #      max_attempts: 5
+## #      window: 60s
+##     labels:
+##       - "traefik.enable=true"
+##       - "traefik.frontend.rule=PathPrefix:/jenkins/demo-cimr/"
+##       - "traefik.docker.network=web"
+##       - "traefik.port=8080"
+##     networks:
+##       - web
 
 networks:
   web:
