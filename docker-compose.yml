@@ -55,4 +55,4 @@ services:
 
 networks:
   web:
-    external: true
+    external: false
